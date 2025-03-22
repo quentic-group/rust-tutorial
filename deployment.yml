@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-actix-app
+  namespace: rust-actix-test
+  labels:
+    app: rust-actix-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rust-actix-app
+  template:
+    metadata:
+      labels:
+        app: rust-actix-app
+    spec:
+      containers:
+        - name: rust-actix-app
+          image: rust-actix-app:1.0.0
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /livz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rust-actix-service
+  namespace: rust-actix-test
+spec:
+  selector:
+    app: rust-actix-app
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP
