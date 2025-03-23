@@ -1,6 +1,6 @@
 FROM rust:1.85-alpine AS builder
 WORKDIR /app
-COPY . .
+COPY .. .
 RUN apk add --no-cache musl-dev openssl-dev pkgconfig
 RUN cargo build --release
 RUN cargo install xh
